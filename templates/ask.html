@@ -239,7 +239,21 @@
         });
 
         const data = await res.json();
-        answerArea.innerHTML = `<div class="answer-container"><strong>回答：</strong>${data.answer}</div>`;
+        
+        if (data.debug_info) {
+          // 显示调试信息（开发阶段）
+          answerArea.innerHTML = `
+            <div class="answer-container">
+              <strong>回答：</strong>${data.answer}<br><br>
+              <strong>调试信息：</strong><br>
+              原问题：${data.debug_info.original_question}<br>
+              提取关键词：${JSON.stringify(data.debug_info.extracted_keywords)}<br>
+              问题类型：${data.debug_info.question_type}<br>
+              置信度：${data.debug_info.confidence}
+            </div>`;
+        } else {
+          answerArea.innerHTML = `<div class="answer-container"><strong>回答：</strong>${data.answer}</div>`;
+        }
       } catch (error) {
         answerArea.innerHTML = `<div class="answer-container">抱歉，出现了错误，请稍后再试。</div>`;
       }

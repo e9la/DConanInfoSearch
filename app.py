@@ -3,6 +3,7 @@ import os
 import re
 
 from utils.interview_sources import get_interview_metadata
+from utils.llm_service import create_llm_service
 
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -203,10 +204,39 @@ def ask():
     if request.method == "GET":
         return render_template("ask.html")
     
-    question = request.form.get("question", "")
-    # TODO: 将问题传递给 LLM API 进行处理
-    # 目前直接返回占位符消息，为后续集成预留扩展空间
-    return jsonify({"answer": "AI chat coming soon!"})
+    question = request.form.get("question", "").strip()
+    if not question:
+        return jsonify({"error": "问题不能为空"}), 400
+    elif len(question) < 5:
+        return jsonify({"error": "问题太短了, 请提供更多细节"}), 400
+    elif len(question) > 50:
+        return jsonify({"error": "问题太长了, 请简化你的问题"}), 400
+    
+    try:
+        # 🚀 使用 LLM 服务提取关键词
+        llm_service = create_llm_service()
+        keyword_result = llm_service.extract_keywords(question)
+        
+        # 返回关键词提取结果（开发阶段）
+        return jsonify({
+            "answer": f"AI chat coming soon!",
+            "debug_info": {
+                "original_question": question,
+                "extracted_keywords": keyword_result["keywords"],
+                "question_type": keyword_result["question_type"], 
+                "confidence": keyword_result["confidence"]
+            }
+        })
+        
+    except Exception as e:
+        print(f"❌ LLM 处理失败：{e}")
+        return jsonify({
+            "answer": "AI chat coming soon!",
+            "debug_info": {
+                "error": str(e),
+                "fallback_keywords": [question]
+            }
+        })
 
 # 启动服务（适配 Render 的 PORT 环境变量）
 if __name__ == "__main__":
