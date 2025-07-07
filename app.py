@@ -4,6 +4,7 @@ import re
 
 from utils.interview_sources import get_interview_metadata
 from utils.llm_service import create_llm_service
+from utils.content_search import create_content_search_service
 
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -213,30 +214,54 @@ def ask():
         return jsonify({"error": "问题太长了, 请简化你的问题"}), 400
     
     try:
-        # 🚀 使用 LLM 服务提取关键词
+        # 🚀 Step 1: 使用 LLM 服务提取关键词
         llm_service = create_llm_service()
         keyword_result = llm_service.extract_keywords(question)
+        keywords = keyword_result["keywords"]
         
-        # 返回关键词提取结果（开发阶段）
+        print(f"📝 提取到关键词: {keywords}")
+        
+        # 🚀 Step 2: 初始化访谈文本缓存
+        init_interview_cache()
+        
+        # 🚀 Step 3: 使用内容搜索服务查找相关内容
+        search_service = create_content_search_service(interview_text_cache)
+        search_results = search_service.search_keywords(keywords, max_length=10000)
+        
+        # 🚀 Step 4: 格式化返回结果
+        if not search_results:
+            return jsonify({
+                "answer": "抱歉，没有找到相关的访谈内容。",
+                "keywords_extracted": keywords,
+                "results_count": 0
+            })
+        
+        # 格式化搜索结果
+        formatted_results = []
+        for result in search_results:
+            formatted_results.append({
+                "text": result.text,
+                "highlighted_text": result.highlighted_text,
+                "keywords_found": result.keywords_found,
+                "source": result.source,
+                "url": result.url,
+                "relevance_score": round(result.relevance_score, 2)
+            })
+        
         return jsonify({
-            "answer": f"AI chat coming soon!",
-            "debug_info": {
-                "original_question": question,
-                "extracted_keywords": keyword_result["keywords"],
-                "question_type": keyword_result["question_type"], 
-                "confidence": keyword_result["confidence"]
-            }
+            "answer": f"找到 {len(search_results)} 条相关访谈内容",
+            "keywords_extracted": keywords,
+            "results_count": len(search_results),
+            "search_results": formatted_results,
+            "total_length": sum(len(r.text) for r in search_results)
         })
         
     except Exception as e:
-        print(f"❌ LLM 处理失败：{e}")
+        print(f"❌ AI 处理失败：{e}")
         return jsonify({
-            "answer": "AI chat coming soon!",
-            "debug_info": {
-                "error": str(e),
-                "fallback_keywords": [question]
-            }
-        })
+            "answer": "抱歉，处理您的问题时出现了错误，请稍后再试。",
+            "error": str(e)
+        }), 500
 
 # 启动服务（适配 Render 的 PORT 环境变量）
 if __name__ == "__main__":

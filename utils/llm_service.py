@@ -14,7 +14,7 @@ class LLMProvider(ABC):
     
     @abstractmethod
     def extract_keywords(self, question: str) -> Dict[str, Any]:
-        """
+        """  
         从用户问题中提取关键词
         
         Args:
@@ -75,7 +75,8 @@ class GeminiProvider(LLMProvider):
 }}
 
 只返回 JSON，不要其他解释!!!""".format(question)
-        
+
+        result_text = ""        
         try:
             print("🔄 正在调用 Gemini API...")
             response = self.client.models.generate_content(

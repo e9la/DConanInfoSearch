@@ -111,6 +111,94 @@
       border-left: 4px solid #0078D7;
     }
 
+    .search-results-container {
+      margin-top: 1em;
+    }
+
+    .search-result-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 1em;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+    }
+
+    .search-result-card:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+    }
+
+    .search-result-header {
+      background-color: #e2ecf8;
+      padding: 0.8em 1em;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-result-source {
+      font-weight: bold;
+      color: #333;
+      font-size: 0.95em;
+    }
+
+    .search-result-score {
+      background-color: #0078D7;
+      color: white;
+      padding: 0.2em 0.5em;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+
+    .search-result-content {
+      padding: 1em;
+      line-height: 1.6;
+    }
+
+    .search-result-content mark {
+      background-color: #ffeb3b;
+      padding: 0.1em 0.2em;
+      border-radius: 2px;
+      font-weight: bold;
+    }
+
+    .search-result-keywords {
+      margin-top: 0.5em;
+      font-size: 0.85em;
+      color: #666;
+    }
+
+    .keyword-tag {
+      display: inline-block;
+      background-color: #e3f2fd;
+      color: #1976d2;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      margin-right: 0.3em;
+      font-size: 0.8em;
+    }
+
+    .search-summary {
+      background-color: #e8f5e8;
+      border: 1px solid #4caf50;
+      padding: 1em;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #666;
+      padding: 2em;
+      background-color: #f9f9f9;
+      border-radius: 6px;
+      margin-top: 1em;
+    }
+
     footer {
       text-align: center;
       margin-top: 3em;
@@ -240,19 +328,50 @@
 
         const data = await res.json();
         
-        if (data.debug_info) {
-          // 显示调试信息（开发阶段）
-          answerArea.innerHTML = `
-            <div class="answer-container">
-              <strong>回答：</strong>${data.answer}<br><br>
-              <strong>调试信息：</strong><br>
-              原问题：${data.debug_info.original_question}<br>
-              提取关键词：${JSON.stringify(data.debug_info.extracted_keywords)}<br>
-              问题类型：${data.debug_info.question_type}<br>
-              置信度：${data.debug_info.confidence}
-            </div>`;
+        if (data.error) {
+          answerArea.innerHTML = `<div class="answer-container" style="border-left-color: #dc3545; background-color: #f8d7da;">❌ ${data.error}</div>`;
+          return;
+        }
+        
+        if (data.search_results && data.search_results.length > 0) {
+          // 显示搜索结果
+          let html = `
+            <div class="search-summary">
+              <strong>✅ ${data.answer}</strong><br>
+              <small>提取关键词: ${data.keywords_extracted.join(', ')} | 总字数: ${data.total_length}</small>
+            </div>
+            <div class="search-results-container">
+          `;
+          
+          data.search_results.forEach((result, index) => {
+            const keywords = result.keywords_found.map(kw => `<span class="keyword-tag">${kw}</span>`).join('');
+            
+            html += `
+              <div class="search-result-card" ${result.url ? `onclick="window.open('${result.url}', '_blank')" style="cursor: pointer;"` : ''}>
+                <div class="search-result-header">
+                  <div class="search-result-source">${result.source}</div>
+                  <div class="search-result-score">${result.relevance_score}</div>
+                </div>
+                <div class="search-result-content">
+                  <div>${result.highlighted_text}</div>
+                  <div class="search-result-keywords">
+                    关键词: ${keywords}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          
+          html += '</div>';
+          answerArea.innerHTML = html;
         } else {
-          answerArea.innerHTML = `<div class="answer-container"><strong>回答：</strong>${data.answer}</div>`;
+          // 没有搜索结果
+          answerArea.innerHTML = `
+            <div class="no-results">
+              😔 ${data.answer}<br>
+              <small>尝试关键词: ${data.keywords_extracted ? data.keywords_extracted.join(', ') : '无'}</small>
+            </div>
+          `;
         }
       } catch (error) {
         answerArea.innerHTML = `<div class="answer-container">抱歉，出现了错误，请稍后再试。</div>`;
