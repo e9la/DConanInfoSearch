@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI智能对话 - 名侦探柯南信息检索系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 2em;
+      padding-bottom: 6em;
+    }
+
+    .header-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1em;
+      margin-top: 1em;
+      margin-bottom: 1.5em;
+    }
+
+    .logo-img {
+      width: 80px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .title-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .title-text div {
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+    }
+
+    .title-text div:nth-child(1) {
+      font-size: 1.9em;
+    }
+
+    .title-text div:nth-child(2) {
+      font-size: 2.4em;
+    }
+
+    .title-text div:nth-child(3) {
+      font-size: 1.3em;
+    }
+
+    .section {
+      background-color: #fff;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin: 2em auto;
+      max-width: 720px;
+    }
+
+    .mode-description {
+      background-color: #eaf4ff;
+      border: 1px solid #b3d4fc;
+      padding: 1em;
+      border-radius: 6px;
+      color: #333;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    #ask-form {
+      display: flex;
+      gap: 1em;
+      flex-wrap: wrap;
+      margin-top: 1em;
+    }
+
+    #ask-form input,
+    #ask-form button {
+      padding: 0.6em;
+      font-size: 1em;
+      border-radius: 4px;
+    }
+
+    #ask-form input {
+      flex: 1;
+      border: 1px solid #ccc;
+      min-width: 160px;
+    }
+
+    #ask-form button {
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #ask-form button:hover {
+      background-color: #005fa3;
+    }
+
+    .answer-container {
+      margin-top: 1em;
+      padding: 1em;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      border-left: 4px solid #0078D7;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3em;
+      color: #777;
+      font-size: 0.9em;
+    }
+
+    footer a {
+      color: #0078D7;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: #ffffff;
+      border-top: 1px solid #ccc;
+      z-index: 10;
+      padding: 0.4em 0;
+      justify-content: space-around;
+    }
+
+    .tab-bar button {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 0.6em 1.2em;
+      background: #f9f9f9;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab-bar button:hover {
+      background-color: #f0f7ff;
+      box-shadow: 0 0 6px rgba(0, 120, 215, 0.2);
+    }
+
+    .tab-bar .ai-chat-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      background-color: #0078D7;
+      color: white;
+      border-color: #0078D7;
+      font-weight: bold;
+    }
+
+    .ai-chat-svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    @media (max-width: 640px) {
+      #ask-form input,
+      #ask-form button {
+        flex: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-box">
+    <img src="/static/conan.png" alt="Conan" class="logo-img">
+    <div class="title-text">
+      <div>名侦探</div>
+      <div>柯南</div>
+      <div>AI智能对话</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="mode-description">
+      🤖 当前模式：<strong>AI智能对话</strong><br>
+      ・基于柯南相关资料的智能问答<br>
+      ・支持中文提问，获得相关信息和解答<br>
+    </div>
+
+    <form id="ask-form">
+      <input name="question" placeholder="请输入您的问题，例如：柯南的真实身份是什么？" required />
+      <button type="submit">提问</button>
+    </form>
+
+    <div id="answer-area"></div>
+  </div>
+
+  <footer>
+    制作：<a href="https://space.bilibili.com/1969358629?spm_id_from=333.1007.0.0" target="_blank">哎哎哎哎哎哎哎哎哎啦</a>、<a href="https://github.com/neyuki778" target="_blank">Yuki</a>、<a href="https://tieba.baidu.com/home/main?id=tb.1.69a710ab.Wys0SW7-Na-4ZOdVt0XGgg" target="_blank">平者深黑</a>、<a href="https://github.com/jiaweiz9" target="_blank">Kyle</a>、<a href="https://github.com/Pseudocirrus" target="_blank">Pseudocirrus</a>、[虚位以待]、[虚位以待] 等
+  </footer>
+
+  <div class="tab-bar">
+    <button onclick="window.location.href='/'" id="tab-japanese">📘 漫画文本</button>
+    <button class="ai-chat-btn">
+      <svg class="ai-chat-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 8.01953V8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M15 8.01953V8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      🤖 AI对话
+    </button>
+    <button onclick="window.location.href='/'" id="tab-interview">🗣️ 访谈信息</button>
+  </div>
+
+  <script>
+    document.getElementById("ask-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const question = new FormData(e.target).get("question").trim();
+      const answerArea = document.getElementById("answer-area");
+      
+      if (!question) return;
+      
+      answerArea.innerHTML = `<div class="answer-container">正在思考中...</div>`;
+
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ question })
+        });
+
+        const data = await res.json();
+        answerArea.innerHTML = `<div class="answer-container"><strong>回答：</strong>${data.answer}</div>`;
+      } catch (error) {
+        answerArea.innerHTML = `<div class="answer-container">抱歉，出现了错误，请稍后再试。</div>`;
+      }
+    });
+  </script>
+</body>
+</html>

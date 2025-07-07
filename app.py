@@ -198,10 +198,15 @@ def cache_status():
     return jsonify(status)
 
 # 未来：接入 LLM 问答接口
-@app.route("/ask", methods=["POST"])
+@app.route("/ask", methods=["GET", "POST"])
 def ask():
+    if request.method == "GET":
+        return render_template("ask.html")
+    
     question = request.form.get("question", "")
-    return jsonify({"answer": f"暂未接入 LLM，收到问题：{question}"})
+    # TODO: 将问题传递给 LLM API 进行处理
+    # 目前直接返回占位符消息，为后续集成预留扩展空间
+    return jsonify({"answer": "AI chat coming soon!"})
 
 # 启动服务（适配 Render 的 PORT 环境变量）
 if __name__ == "__main__":
