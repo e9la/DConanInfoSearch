@@ -5,7 +5,7 @@ LLM 服务模块 - 支持多个 LLM 提供商的抽象接口
 
 import os
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from abc import ABC, abstractmethod
 
 
@@ -27,6 +27,21 @@ class LLMProvider(ABC):
                 "question_type": "漫画内容" | "访谈信息" | "综合查询",
                 "confidence": 0.8
             }
+        """
+        pass
+    
+    @abstractmethod
+    def generate_answer(self, question: str, context_texts: List[str], sources: List[str]) -> str:
+        """
+        根据上下文文本生成回答
+        
+        Args:
+            question: 用户原始问题
+            context_texts: 相关文本列表
+            sources: 对应的来源列表
+            
+        Returns:
+            生成的简洁回答
         """
         pass
 
@@ -128,6 +143,56 @@ class GeminiProvider(LLMProvider):
                 "question_type": "综合查询", 
                 "confidence": 0.3
             }
+    
+    def generate_answer(self, question: str, context_texts: List[str], sources: List[str]) -> str:
+        """使用 Gemini 2.5 Flash 生成回答"""
+        if not self.client:
+            raise Exception("Gemini 客户端未初始化")
+        
+        if not context_texts:
+            return "抱歉，没有找到相关信息来回答您的问题。"
+        
+        # 构建上下文信息
+        context_info = []
+        for i, (text, source) in enumerate(zip(context_texts, sources), 1):
+            context_info.append(f"【来源{i}：{source}】\n{text}")
+        
+        context_str = "\n\n".join(context_info)
+        
+        prompt = f"""你是名侦探柯南的专业问答助手。请根据提供的访谈资料回答用户问题。
+
+用户问题：{question}
+
+相关访谈资料：
+{context_str}
+
+回答要求：
+1. 基于提供的资料进行回答，不要编造信息
+2. 回答要简洁明了，3-5句话即可
+3. 如果资料中有明确答案，直接引用；如果没有明确答案，说明资料中的相关信息
+4. 在回答结尾简单提及信息来源（如：根据作者访谈、根据官方资料等）
+5. 使用中文回答
+
+请直接给出回答，不要有额外的解释或格式："""
+
+        try:
+            print("🤖 正在生成 AI 回答...")
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            
+            answer = response.text
+            if answer is None:
+                answer = ""
+            answer = answer.strip()
+            
+            print("✅ AI 回答生成成功")
+            return answer if answer else "抱歉，无法基于当前资料生成回答。"
+            
+        except Exception as e:
+            print(f"❌ 生成回答失败：{e}")
+            return "抱歉，生成回答时出现错误，请稍后再试。"
 
 
 class MockProvider(LLMProvider):
@@ -153,6 +218,16 @@ class MockProvider(LLMProvider):
             "question_type": "综合查询",
             "confidence": 0.6
         }
+    
+    def generate_answer(self, question: str, context_texts: List[str], sources: List[str]) -> str:
+        """模拟回答生成"""
+        if not context_texts:
+            return "抱歉，没有找到相关信息来回答您的问题。"
+        
+        # 简单的模拟回答逻辑
+        first_context = context_texts[0][:100] + "..." if len(context_texts[0]) > 100 else context_texts[0]
+        
+        return f"根据访谈资料，{first_context} 这是基于 {sources[0] if sources else '相关资料'} 的信息。（这是模拟回答，实际使用请配置 Gemini API）"
 
 
 class LLMService:
@@ -180,6 +255,10 @@ class LLMService:
     def extract_keywords(self, question: str) -> Dict[str, Any]:
         """提取关键词（统一接口）"""
         return self.provider.extract_keywords(question)
+    
+    def generate_answer(self, question: str, context_texts: List[str], sources: List[str]) -> str:
+        """生成回答（统一接口）"""
+        return self.provider.generate_answer(question, context_texts, sources)
 
 
 # 工厂函数

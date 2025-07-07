@@ -103,6 +103,48 @@
       background-color: #005fa3;
     }
 
+    .ai-answer-container {
+      margin-top: 1em;
+      padding: 1.5em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ai-answer-container::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+      border-radius: 12px;
+      z-index: -1;
+      opacity: 0.7;
+    }
+
+    .ai-answer-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1em;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .ai-answer-header .ai-icon {
+      margin-right: 0.5em;
+      font-size: 1.2em;
+    }
+
+    .ai-answer-content {
+      line-height: 1.6;
+      font-size: 1.05em;
+    }
+
     .answer-container {
       margin-top: 1em;
       padding: 1em;
@@ -188,6 +230,13 @@
       padding: 1em;
       border-radius: 6px;
       margin-bottom: 1em;
+      margin-top: 2em;
+    }
+
+    .search-summary h4 {
+      margin: 0 0 0.5em 0;
+      color: #2e7d32;
+      font-size: 1em;
     }
 
     .no-results {
@@ -333,12 +382,27 @@
           return;
         }
         
+        let html = '';
+        
+        // 显示 AI 回答（最突出）
+        if (data.ai_answer) {
+          html += `
+            <div class="ai-answer-container">
+              <div class="ai-answer-header">
+                <span class="ai-icon">🤖</span>
+                AI 智能回答
+              </div>
+              <div class="ai-answer-content">${data.ai_answer}</div>
+            </div>
+          `;
+        }
+        
         if (data.search_results && data.search_results.length > 0) {
-          // 显示搜索结果
-          let html = `
+          // 显示搜索结果摘要
+          html += `
             <div class="search-summary">
-              <strong>✅ ${data.answer}</strong><br>
-              <small>提取关键词: ${data.keywords_extracted.join(', ')} | 总字数: ${data.total_length}</small>
+              <h4>📚 相关资料详情</h4>
+              <small>找到 ${data.results_count} 条相关内容 | 提取关键词: ${data.keywords_extracted.join(', ')} | 总字数: ${data.total_length}</small>
             </div>
             <div class="search-results-container">
           `;
@@ -363,16 +427,19 @@
           });
           
           html += '</div>';
-          answerArea.innerHTML = html;
         } else {
-          // 没有搜索结果
-          answerArea.innerHTML = `
-            <div class="no-results">
-              😔 ${data.answer}<br>
-              <small>尝试关键词: ${data.keywords_extracted ? data.keywords_extracted.join(', ') : '无'}</small>
-            </div>
-          `;
+          // 没有搜索结果但有 AI 回答的情况
+          if (!data.ai_answer) {
+            html += `
+              <div class="no-results">
+                😔 没有找到相关的访谈内容<br>
+                <small>尝试关键词: ${data.keywords_extracted ? data.keywords_extracted.join(', ') : '无'}</small>
+              </div>
+            `;
+          }
         }
+        
+        answerArea.innerHTML = html;
       } catch (error) {
         answerArea.innerHTML = `<div class="answer-container">抱歉，出现了错误，请稍后再试。</div>`;
       }

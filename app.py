@@ -228,10 +228,25 @@ def ask():
         search_service = create_content_search_service(interview_text_cache)
         search_results = search_service.search_keywords(keywords, max_length=10000)
         
-        # 🚀 Step 4: 格式化返回结果
+        # 🚀 Step 4: 生成 AI 回答
+        ai_answer = "没有找到相关信息来回答您的问题。"
+        if search_results:
+            try:
+                # 提取文本和来源用于 AI 生成回答
+                context_texts = [result.text for result in search_results]
+                sources = [result.source for result in search_results]
+                
+                ai_answer = llm_service.generate_answer(question, context_texts, sources)
+                print(f"🤖 AI 回答生成完成")
+                
+            except Exception as e:
+                print(f"❌ AI 回答生成失败：{e}")
+                ai_answer = "抱歉，生成回答时出现错误，但您可以查看下方的相关资料。"
+        
+        # 🚀 Step 5: 格式化返回结果
         if not search_results:
             return jsonify({
-                "answer": "抱歉，没有找到相关的访谈内容。",
+                "ai_answer": "抱歉，没有找到相关的访谈内容。",
                 "keywords_extracted": keywords,
                 "results_count": 0
             })
@@ -249,7 +264,7 @@ def ask():
             })
         
         return jsonify({
-            "answer": f"找到 {len(search_results)} 条相关访谈内容",
+            "ai_answer": ai_answer,
             "keywords_extracted": keywords,
             "results_count": len(search_results),
             "search_results": formatted_results,
@@ -259,7 +274,7 @@ def ask():
     except Exception as e:
         print(f"❌ AI 处理失败：{e}")
         return jsonify({
-            "answer": "抱歉，处理您的问题时出现了错误，请稍后再试。",
+            "ai_answer": "抱歉，处理您的问题时出现了错误，请稍后再试。",
             "error": str(e)
         }), 500
 
