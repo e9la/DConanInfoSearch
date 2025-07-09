@@ -14,6 +14,7 @@ from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR
 from utils.cache_utils import init_manga_cache, init_interview_cache, manga_text_cache, interview_text_cache
 from utils.search_utils import count_word_in_documents
 from utils.quiz_utils import load_quiz_bank
+from scripts.word_expand import word_expand
 
 # Flask init
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -89,18 +90,20 @@ def interview_search():
 
     for rel_path, text in file_data.items():
         try:
-            count = text.count(word)
-            if count > 0:
-                sentences = re.split(r'[\u3002！？\n]', text)
-                snippets = [f"...{s.strip()}..." for s in sentences if word in s][:3]
-                meta = get_interview_metadata(rel_path)
-                results.append({
-                    "file": rel_path,
-                    "count": count,
-                    "source": meta["source"],
-                    "url": meta["url"],
-                    "snippets": snippets
-                })
+            words = word_expand(word)
+            for word in words:
+                count = text.count(word)
+                if count > 0:
+                    sentences = re.split(r'[\u3002！？\n]', text)
+                    snippets = [f"...{s.strip()}..." for s in sentences if word in s][:3]
+                    meta = get_interview_metadata(rel_path)
+                    results.append({
+                        "file": rel_path,
+                        "count": count,
+                        "source": meta["source"],
+                        "url": meta["url"],
+                        "snippets": snippets
+                    })
         except Exception as e:
             print(f"❌ Error processing {rel_path}: {e}")
 
