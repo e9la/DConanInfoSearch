@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="interview-container">
+    <h2>{{ interview.title }}</h2>
+
+    <div class="metadata">
+      <p><strong>🕒 时间：</strong>{{ metadata.time }}</p>
+      <p><strong>🎤 参与者：</strong>{{ metadata.participants }}</p>
+      <p><strong>📌 主题：</strong>{{ metadata.theme }}</p>
+    </div>
+
+    <div class="interview-content">
+      <h3>🔍 与关键词「<span style="color: darkred">{{ keyword }}</span>」相关的上下文片段</h3>
+      {% if match_contexts %}
+        {% for context in match_contexts %}
+          <div class="context-block" style="border-left: 4px solid #ccc; margin-bottom: 1.5em; padding-left: 1em;">
+            <pre style="white-space: pre-wrap; background-color: #f9f9f9; padding: 1em;">{{ context }}</pre>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>❗ 未找到与关键词「{{ keyword }}」相关的片段。</p>
+      {% endif %}
+    </div>
+
+    <div class="sources">
+      <h3>🔗 原始来源</h3>
+      <ul>
+        {% for item in source_links %}
+          {% if item.url %}
+            <li><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>（{{ item.source }}）</li>
+          {% else %}
+            <li>{{ item.title }}（{{ item.source }}，无跳转链接）</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+
+
+
+    <div style="margin-top: 2em;">
+      <a href="/search_page">← 返回搜索页</a>
+    </div>
+  </div>
+{% endblock %}
+

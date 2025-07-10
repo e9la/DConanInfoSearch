@@ -7,7 +7,7 @@ const sourceFilter = document.getElementById("source-filter");
 
 const modeDescriptions = {
   japanese: `📘 当前模式：<strong>漫画文本检索</strong><br>・仅搜索漫画原文（持续更新中）<br>・仅支持日文全词匹配（不支持模糊搜索）<br>・可填写卷号进行过滤`,
-  interview: `🗣️ 当前模式：<strong>访谈资料检索</strong><br>・作者访谈、花絮、幕后整理内容<br>・点击卡片可跳转至原始来源<br>・可选择来源筛选`
+  interview: `🗣️ 当前模式：<strong>访谈资料检索</strong><br>・作者访谈、花絮、幕后整理内容<br>・点击卡片可跳转至访谈详情页<br>・可选择来源筛选`
 };
 
 document.getElementById("tab-japanese").addEventListener("click", () => switchMode("japanese"));
@@ -21,7 +21,7 @@ function switchMode(mode) {
   document.getElementById("tab-" + mode).classList.add("active");
   resultList.innerHTML = "";
   volumeFilter.style.display = (mode === "japanese") ? "block" : "none";
-  sourceFilter.style.display = (mode === "interview") ? "block" : "none";
+  sourceFilter.style.display = "none";
   if (mode === "interview") loadInterviewSources();
 }
 
@@ -69,21 +69,22 @@ document.getElementById("search-form").addEventListener("submit", async function
       resultList.appendChild(div);
     });
   } else {
-    data.forEach(({ file, count, source, url, snippets }) => {
+    data.forEach(({ id, title, count, sources, snippets }) => {
       const card = document.createElement("div");
       card.className = "card";
       card.style.border = "1px solid #ccc";
       card.style.borderRadius = "8px";
       card.style.marginBottom = "1.5em";
       card.style.backgroundColor = "#fff";
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => {
+        const encodedKw = encodeURIComponent(word);
+        window.open(`/interview_detail/${id}?kw=${encodedKw}`, "_blank");
+      });
 
-      if (url) {
-        card.style.cursor = "pointer";
-        card.addEventListener("click", () => window.open(url, "_blank"));
-      }
 
       const header = document.createElement("div");
-      header.textContent = source;
+      header.textContent = title;
       header.style.backgroundColor = "#e2ecf8";
       header.style.padding = "0.8em 1em";
       header.style.fontWeight = "bold";
@@ -93,11 +94,12 @@ document.getElementById("search-form").addEventListener("submit", async function
       const body = document.createElement("div");
       body.style.padding = "1em";
 
-      const filename = file.split("/").pop().replace(/\\.txt$/, "");
-      const fileTitle = document.createElement("p");
-      fileTitle.innerHTML = `<strong>${filename}...</strong>`;
-      fileTitle.style.marginBottom = "0.8em";
-      body.appendChild(fileTitle);
+      // ✅ 替换为来源信息
+      const metaLine = document.createElement("p");
+      const sourceCount = sources.length;
+      metaLine.innerHTML = `📁 本访谈整理自 <strong>${sourceCount}</strong> 个来源`;
+      metaLine.style.marginBottom = "0.5em";
+      body.appendChild(metaLine);
 
       snippets.forEach(snippet => {
         const p = document.createElement("p");
