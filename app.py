@@ -11,11 +11,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from utils.interview_sources import get_interview_metadata
-from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR
+from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, PROCESSED_DATA_DIR
 from utils.cache_utils import init_manga_cache, init_interview_cache, manga_text_cache, interview_text_cache
 from utils.search_utils import count_word_in_documents, word_expand
-
 from utils.quiz_utils import load_quiz_bank
+from utils.interview_helpers import extract_time, extract_participants, extract_theme, extract_contexts
 
 # Flask init
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -26,6 +26,9 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["60 per minute"])
 
 # Quiz bank init
 quiz_bank = load_quiz_bank()
+
+with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
+    INTERVIEWS = json.load(f)
 
 # =============================
 # 页面入口：答题验证界面
@@ -101,41 +104,86 @@ def interview_sources():
 def interview_search():
     word = request.form.get("word", "").strip()
     source_filter = request.form.get("source_filter", "").strip()
-    base_dir = INTERVIEW_DATA_DIR
     results = []
 
     if not word:
         return jsonify(results)
 
-    file_data = interview_text_cache if os.environ.get("ENABLE_CACHE", "true").lower() == "true" else {}
-    if not file_data:
-        init_interview_cache()
-        file_data = interview_text_cache
+    words = word_expand(word)  # 支持日文变形展开，如ひらがな/漢字等
 
-    for rel_path, text in file_data.items():
-        try:
-            meta = get_interview_metadata(rel_path)
-            if source_filter and meta["source"] != source_filter:
-                continue
+    for interview in INTERVIEWS:
+        text = interview["content"]
+        matched = False
+        total_count = 0
+        all_snippets = []
 
-            words = word_expand(word)
-            for word in words:
-                count = text.count(word)
-                if count > 0:
-                    sentences = re.split(r'[\u3002！？\n]', text)
-                    snippets = [f"...{s.strip()}..." for s in sentences if word in s][:3]
-                    results.append({
-                        "file": rel_path,
-                        "count": count,
-                        "source": meta["source"],
-                        "url": meta["url"],
-                        "snippets": snippets
-                    })
-        except Exception as e:
-            print(f"❌ Error processing {rel_path}: {e}")
+        for w in words:
+            count = text.count(w)
+            if count > 0:
+                matched = True
+                total_count += count
+                sentences = re.split(r'[\u3002！？\n]', text)
+                snippets = [f"...{s.strip()}..." for s in sentences if w in s][:3]
+                all_snippets.extend(snippets)
+
+        if matched:
+            results.append({
+                "id": interview["id"],
+                "title": interview["title"],
+                "count": total_count,
+                "sources": interview["sources"],
+                "snippets": all_snippets[:3],
+            })
 
     results.sort(key=lambda x: -x["count"])
+    
+    #print(f"🔍 返回结果含 ID: {[r['id'] for r in results]}")
+
     return jsonify(results)
+
+# =============================
+# 访谈详情页接口
+# =============================
+@app.route("/interview_detail/<interview_id>")
+def interview_detail(interview_id):
+    # 查找访谈条目
+    interview = next((i for i in INTERVIEWS if i["id"] == interview_id), None)
+    if not interview:
+        return "该访谈不存在", 404
+
+    # 提取元数据信息
+    metadata = {
+        "time": extract_time(interview["title"]),
+        "participants": extract_participants(interview["content"]),
+        "theme": extract_theme(interview["title"], interview["content"]),
+    }
+
+    # 获取关键词（来自 URL 参数）
+    search_word = request.args.get("kw", "").strip()
+
+    match_contexts = extract_contexts(interview["content"], search_word)
+
+    # 获取来源链接信息
+    source_links = []
+    for src in interview["sources"]:
+        meta = get_interview_metadata(src)  # 你提供的函数
+        title = os.path.basename(src).replace(".txt", "")
+        source_links.append({
+            "title": title,
+            "source": meta["source"],
+            "url": meta["url"]
+        })
+
+    # 渲染页面
+    return render_template(
+        "interview_detail.html",
+        interview=interview,
+        metadata=metadata,
+        keyword=search_word,
+        match_contexts=match_contexts,
+        source_links=source_links  # ✅ 新增传入
+    )
+
 
 # =============================
 # 调试接口

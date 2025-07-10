@@ -6,6 +6,38 @@ body {
   padding-bottom: 6em;
 }
 
+.container {
+  max-width: 900px;
+  margin: 2em auto;
+  padding: 1.5em;
+  background-color: #fdfdfd;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  font-family: "Helvetica Neue", sans-serif;
+  color: #333;
+}
+
+.interview-meta p {
+  margin: 0.3em 0;
+}
+
+.interview-content {
+  margin: 1.5em 0;
+  background: #f4f4f4;
+  padding: 1em;
+  border-left: 4px solid #bbb;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.interview-sources ul {
+  padding-left: 1.2em;
+}
+
+.interview-sources li {
+  margin-bottom: 0.4em;
+}
+
 .header-box {
   display: flex;
   align-items: center;

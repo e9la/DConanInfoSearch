@@ -1,6 +1,0 @@
-Name: "Truth in Zero" Booklet
-Date: April 24, 2018
-
-Content:
-Translation:
-Source: Raw

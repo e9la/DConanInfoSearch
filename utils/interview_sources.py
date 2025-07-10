@@ -2,12 +2,14 @@ import os
 import re
 import json
 
+from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, PROCESSED_DATA_DIR
+
 # 加载 sbsub 访谈标题-链接映射表
 try:
-    with open("./data/interviews/sbsub/sbsub_title_url_map.json", encoding="utf-8") as f:
+    with open(os.path.join(INTERVIEW_DATA_DIR, "sbsub/sbsub_title_url_map.json"), encoding="utf-8") as f:
         sbsub_title_url_map = json.load(f)
 
-    with open("./data/interviews/bilibili_article/bilibili_readlists.json", encoding="utf-8") as f:
+    with open(os.path.join(INTERVIEW_DATA_DIR, "bilibili_article/bilibili_readlists.json"), encoding="utf-8") as f:
         bilibili_source_map = json.load(f)
 
 except FileNotFoundError:
@@ -41,6 +43,7 @@ def get_interview_metadata(rel_path: str) -> dict:
             "source": "银色子弹访谈整理",
             "url": url
         }
+    
 
     # 4. fallback
     return {
