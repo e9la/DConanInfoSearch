@@ -2,6 +2,8 @@ import os
 import re
 from utils.cache_utils import init_manga_cache, manga_text_cache
 from utils.config import MANGA_TEXT_DIR, ENABLE_CACHE
+from utils.constants import VOCABULARYS
+
 
 def count_word_in_documents(word):
     result = []
@@ -40,3 +42,20 @@ def count_word_in_documents(word):
 
     result.sort(key=lambda x: x["volume"])
     return result
+
+
+def word_expand(word):
+    related_lists = [Vocabulary for Vocabulary in VOCABULARYS if word in Vocabulary]
+    if related_lists:
+        # 拼接所有相关列表并去重（保持原始顺序）
+        result = []
+        seen = set()
+        for lst in related_lists:
+            for item in lst:
+                if item not in seen:
+                    seen.add(item)
+                    result.append(item)
+        return result
+    else:
+        # 未找到时返回仅包含该词的列表
+        return [word]
