@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>名侦探柯南信息检索系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% include "components/header.html" %}
+
+  <div class="section">
+    {% block content %}{% endblock %}
+  </div>
+
+  {% include "components/footer.html" %}
+  <div class="tab-bar">
+    <button id="tab-japanese" class="active">📘 漫画文本</button>
+    <button id="tab-interview">🗣️ 访谈信息</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

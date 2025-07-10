@@ -1,4 +1,5 @@
 import os
+import zipfile
 from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, ENABLE_CACHE
 
 manga_text_cache = {}
@@ -20,11 +21,27 @@ def _init_cache_from_directory(cache_dict, base_dir, use_walk=False):
 
     for root, _, files in os.walk(base_dir) if use_walk else [(base_dir, [], os.listdir(base_dir))]:
         for filename in files:
+            filepath = os.path.join(root, filename)
+            rel_path = os.path.relpath(filepath, base_dir)
+
             if filename.endswith(".txt"):
-                filepath = os.path.join(root, filename)
-                rel_path = os.path.relpath(filepath, base_dir)
                 try:
                     with open(filepath, encoding="utf-8") as f:
                         cache_dict[rel_path] = f.read()
                 except Exception as e:
                     print(f"❌ 缓存失败: {rel_path}: {e}")
+
+            elif filename.endswith(".zip"):
+                try:
+                    with zipfile.ZipFile(filepath, "r") as z:
+                        for name in z.namelist():
+                            if name.endswith(".txt"):
+                                try:
+                                    with z.open(name) as f:
+                                        content = f.read().decode("utf-8")
+                                        key = f"{rel_path}|{name}"
+                                        cache_dict[key] = content
+                                except UnicodeDecodeError:
+                                    print(f"❌ 解码失败: {rel_path} 中的 {name}")
+                except Exception as e:
+                    print(f"❌ 无法读取 zip 文件: {rel_path}: {e}")

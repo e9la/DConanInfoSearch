@@ -1,0 +1,113 @@
+let currentMode = "japanese";
+const modeInput = document.getElementById("mode");
+const resultList = document.getElementById("results");
+const descriptionBox = document.getElementById("mode-description");
+const volumeFilter = document.getElementById("volume-filter");
+const sourceFilter = document.getElementById("source-filter");
+
+const modeDescriptions = {
+  japanese: `📘 当前模式：<strong>漫画文本检索</strong><br>・仅搜索漫画原文（持续更新中）<br>・仅支持日文全词匹配（不支持模糊搜索）<br>・可填写卷号进行过滤`,
+  interview: `🗣️ 当前模式：<strong>访谈资料检索</strong><br>・作者访谈、花絮、幕后整理内容<br>・点击卡片可跳转至原始来源<br>・可选择来源筛选`
+};
+
+document.getElementById("tab-japanese").addEventListener("click", () => switchMode("japanese"));
+document.getElementById("tab-interview").addEventListener("click", () => switchMode("interview"));
+
+function switchMode(mode) {
+  currentMode = mode;
+  modeInput.value = mode;
+  descriptionBox.innerHTML = modeDescriptions[mode];
+  document.querySelectorAll(".tab-bar button").forEach(btn => btn.classList.remove("active"));
+  document.getElementById("tab-" + mode).classList.add("active");
+  resultList.innerHTML = "";
+  volumeFilter.style.display = (mode === "japanese") ? "block" : "none";
+  sourceFilter.style.display = (mode === "interview") ? "block" : "none";
+  if (mode === "interview") loadInterviewSources();
+}
+
+async function loadInterviewSources() {
+  const res = await fetch("/interview_sources");
+  const data = await res.json();
+  sourceFilter.innerHTML = `<option value="">📂 全部来源</option>`;
+  data.forEach(src => {
+    const opt = document.createElement("option");
+    opt.value = src;
+    opt.textContent = src;
+    sourceFilter.appendChild(opt);
+  });
+}
+
+document.getElementById("search-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const word = formData.get("word").trim();
+  const volume = formData.get("volume_filter") || "";
+  const source = formData.get("source_filter") || "";
+
+  const endpoint = currentMode === "japanese" ? "/search" : "/interview_search";
+  const body = currentMode === "japanese" ? { word, volume_filter: volume } : { word, source_filter: source };
+
+  resultList.innerHTML = "";
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(body)
+  });
+
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) {
+    resultList.innerHTML = `<div class='no-result'>未找到包含「${word}」的结果。</div>`;
+    return;
+  }
+
+  if (currentMode === "japanese") {
+    data.forEach(({ volume, count, pages }) => {
+      const div = document.createElement("div");
+      div.textContent = `📄「${word}」在第 ${volume} 卷中出现了 ${count} 次，位于第 ${pages.join("、")} 页`;
+      div.style.marginBottom = "1em";
+      resultList.appendChild(div);
+    });
+  } else {
+    data.forEach(({ file, count, source, url, snippets }) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.border = "1px solid #ccc";
+      card.style.borderRadius = "8px";
+      card.style.marginBottom = "1.5em";
+      card.style.backgroundColor = "#fff";
+
+      if (url) {
+        card.style.cursor = "pointer";
+        card.addEventListener("click", () => window.open(url, "_blank"));
+      }
+
+      const header = document.createElement("div");
+      header.textContent = source;
+      header.style.backgroundColor = "#e2ecf8";
+      header.style.padding = "0.8em 1em";
+      header.style.fontWeight = "bold";
+      header.style.fontSize = "1.05em";
+      card.appendChild(header);
+
+      const body = document.createElement("div");
+      body.style.padding = "1em";
+
+      const filename = file.split("/").pop().replace(/\\.txt$/, "");
+      const fileTitle = document.createElement("p");
+      fileTitle.innerHTML = `<strong>${filename}...</strong>`;
+      fileTitle.style.marginBottom = "0.8em";
+      body.appendChild(fileTitle);
+
+      snippets.forEach(snippet => {
+        const p = document.createElement("p");
+        p.innerHTML = snippet.replace(new RegExp(word, "g"), `<mark>${word}</mark>`);
+        p.style.lineHeight = "1.6";
+        body.appendChild(p);
+      });
+
+      card.appendChild(body);
+      resultList.appendChild(card);
+    });
+  }
+});

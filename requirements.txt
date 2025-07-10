@@ -4,3 +4,4 @@ requests
 beautifulsoup4
 lxml
 flask-limiter
+zipfile
