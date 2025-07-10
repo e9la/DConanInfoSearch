@@ -1,5 +1,3 @@
-# 词汇拓展
-
 Vocabularys = [
     ["银色子弹", "银弹", "銀彈", "銀色子彈", "銀の弾丸", "シルバー・ブレット"],
     ["江户川柯南", "江戸川コナン", "主角"],
@@ -96,19 +94,3 @@ Vocabularys = [
     ["皮斯克", "皮斯科", "皮斯可", "匹斯可", "枡山宪三"],
     ["鬼冢八藏", "鬼塚八藏"],
 ]
-
-def word_expand(word):
-    related_lists = [Vocabulary for Vocabulary in Vocabularys if word in Vocabulary]
-    if related_lists:
-        # 拼接所有相关列表并去重（保持原始顺序）
-        result = []
-        seen = set()
-        for lst in related_lists:
-            for item in lst:
-                if item not in seen:
-                    seen.add(item)
-                    result.append(item)
-        return result
-    else:
-        # 未找到时返回仅包含该词的列表
-        return [word]

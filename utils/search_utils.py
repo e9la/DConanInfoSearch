@@ -40,3 +40,20 @@ def count_word_in_documents(word):
 
     result.sort(key=lambda x: x["volume"])
     return result
+
+
+def word_expand(word):
+    related_lists = [Vocabulary for Vocabulary in Vocabularys if word in Vocabulary]
+    if related_lists:
+        # 拼接所有相关列表并去重（保持原始顺序）
+        result = []
+        seen = set()
+        for lst in related_lists:
+            for item in lst:
+                if item not in seen:
+                    seen.add(item)
+                    result.append(item)
+        return result
+    else:
+        # 未找到时返回仅包含该词的列表
+        return [word]

@@ -12,10 +12,8 @@ from flask_limiter.util import get_remote_address
 from utils.interview_sources import get_interview_metadata
 from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR
 from utils.cache_utils import init_manga_cache, init_interview_cache, manga_text_cache, interview_text_cache
-from utils.search_utils import count_word_in_documents
+from utils.search_utils import count_word_in_documents, word_expand
 from utils.quiz_utils import load_quiz_bank
-
-from scripts.word_expand import word_expand
 
 # Flask init
 app = Flask(__name__, static_folder="static", template_folder="templates")
