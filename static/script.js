@@ -7,8 +7,26 @@ const sourceFilter = document.getElementById("source-filter");
 
 const modeDescriptions = {
   japanese: `📘 当前模式：<strong>漫画文本检索</strong><br>・仅搜索漫画原文（持续更新中）<br>・仅支持日文全词匹配（不支持模糊搜索）<br>・可填写卷号进行过滤`,
-  interview: `🗣️ 当前模式：<strong>访谈资料检索</strong><br>・作者访谈、花絮、幕后整理内容<br>・点击卡片可跳转至访谈详情页<br>・可选择来源筛选`
+  interview: `
+🗣️ 当前模式：<strong>访谈资料检索</strong><br>
+<ul style="padding-left: 1em; margin: 0;">
+  <li>作者访谈、花絮、幕后整理内容</li>
+  <li>点击卡片可跳转至访谈详情页</li>
+  <li>目前收录信息：
+    <ul style="padding-left: 1em;">
+      <li><a href="https://www.sbsub.com/posts/category/interviews/" target="_blank">银色子弹访谈整理</a></li>
+      <li><a href="https://bbs.aptx.cn/thread-296846-2-1.html" target="_blank">名侦探柯南事务所论坛访谈整理</a></li>
+      <li><a href="https://www.detectiveconanworld.com/wiki/Interviews" target="_blank">名侦探柯南维基百科</a></li>
+      <li>其他访谈文字记录</li>
+      <li>部分访谈视频</li>
+      <li><a href="https://ameblo.jp/megumi--hayashibara/entrylist.html" target="_blank">林原惠美博客</a></li>
+    </ul>
+  </li>
+</ul>
+`.trim()
 };
+
+
 
 document.getElementById("tab-japanese").addEventListener("click", () => switchMode("japanese"));
 document.getElementById("tab-interview").addEventListener("click", () => switchMode("interview"));

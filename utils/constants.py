@@ -101,3 +101,19 @@ NAMES = ["青山刚昌", "山口胜平", "高山南", "堀川りょう", "樱井
          "尾田荣一郎"]
 
 CATEGORIES = ['对谈', '青色笔杆', '访谈', '专访', '问答', '座谈']
+
+
+# constants.py
+BV_LIST = [
+    "BV1dT4y1p7Pz",
+    "BV1zzZtYAE9p",
+    "BV12R4y177kx",
+    "BV15x411z74e",
+    "BV1bF411N7Rt",
+    "BV17e4y137yk",
+    "BV1ds411o7iB",
+    "BV1fs411P7ya",
+    "BV1DC4y1C7S9",
+    "BV1m24y1T7Dd",   
+]
+

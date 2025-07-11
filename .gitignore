@@ -116,3 +116,6 @@ data/hayashibara_blogs/blogs/
 
 # quiz bank file
 quiz_bank.json
+
+# secret file
+cookies.json

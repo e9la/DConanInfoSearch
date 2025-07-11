@@ -44,8 +44,17 @@ def get_interview_metadata(rel_path: str) -> dict:
             "url": url
         }
     
+    # ✅ 4. B站字幕（匹配文件名中的 [BVxxxx]）
+    match = re.search(r"bilibili_subtitles/.*?\[(BV[0-9A-Za-z]{10})\]", rel_path)
+    if match:
+        bvid = match.group(1)
+        return {
+            "source": "B站视频",
+            "url": f"https://www.bilibili.com/video/{bvid}/"
+        }
+    
 
-    # 4. fallback
+    # 5. fallback
     return {
         "source": "未知来源",
         "url": None
