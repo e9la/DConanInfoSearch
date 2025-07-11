@@ -151,6 +151,34 @@ def cluster_texts(entries, sentence_threshold=0.9, min_match_count=10):
     
     return final_clusters
 
+# 合并所有 sources 有交集的 cluster
+def merge_overlapping_sources(clusters, entries):
+    from collections import defaultdict
+
+    source_to_cluster = {}
+    for i, cluster in enumerate(clusters):
+        for idx in cluster:
+            for src in entries[idx]["source"].split(","):
+                source_to_cluster[src.strip()] = i
+
+    merged_clusters = []
+    seen = set()
+
+    for i, cluster in enumerate(clusters):
+        if i in seen:
+            continue
+        merge_set = set(cluster)
+        for idx in cluster:
+            for src in entries[idx]["source"].split(","):
+                j = source_to_cluster.get(src.strip())
+                if j is not None:
+                    merge_set.update(clusters[j])
+                    seen.add(j)
+        merged_clusters.append(list(merge_set))
+
+    return merged_clusters
+
+
 def merge_clusters(entries, clusters):
     merged = []
     for idx, cluster in enumerate(clusters):
@@ -196,6 +224,7 @@ def main():
     logging.info(f"✅ 共提取文本数量: {len(all_entries)}")
     logging.info("🔍 计算语义相似度并聚类...")
     clusters = cluster_texts(all_entries)
+    clusters = merge_overlapping_sources(clusters, all_entries)
     logging.info(f"✅ 聚类完成，生成访谈条数: {len(clusters)}")
     logging.info("🧩 合并聚类内容...")
     merged = merge_clusters(all_entries, clusters)
