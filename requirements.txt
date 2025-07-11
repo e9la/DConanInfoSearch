@@ -4,5 +4,3 @@ requests
 beautifulsoup4
 lxml
 flask-limiter
-yt-dlp
-webvtt-py
