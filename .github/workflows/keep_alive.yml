@@ -2,10 +2,9 @@ name: Keep Render Server Alive
 
 on:
   schedule:
-    # 每13分钟执行一次 - 避免Render免费层休眠
+    # 每60分钟执行一次 - 避免Render免费层休眠
     # GitHub Actions的cron语法：分钟 小时 日 月 星期
-    # */13 表示每13分钟执行一次
-    - cron: '*/13 * * * *'
+    - cron: '0 * * * *' # 每个小时的第0分钟运行一次（整点）
   
   # 允许手动触发
   workflow_dispatch:
@@ -48,6 +47,13 @@ jobs:
         
         echo "⏰ 完成时间: $(date)"
         echo "🔄 下次检查将在13分钟后进行"
+
+    - name: Parse and analyze response
+      run: |
+        URL="https://dconaninfosearch.onrender.com/ping"
+        body=$(curl -s "$URL")
+        echo "🧪 JSON 响应分析:"
+        echo "$body" | jq '.' || echo "⚠️ 非JSON响应"
 
     - name: Log Keep-Alive Activity
       run: |
