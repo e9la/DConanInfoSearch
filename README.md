@@ -87,7 +87,7 @@ python app.py
 
 ### 想参与但不知做什么？
 
-1. 浏览已有的 [Issues](https://github.com/你的用户名/DConanInfoSearch/issues)
+1. 浏览已有的 [Issues](https://github.com/e9la/DConanInfoSearch/issues)
 2. 将建议或问题提交为issue
 3. 留言认领一个 issue，避免重复劳动
 
