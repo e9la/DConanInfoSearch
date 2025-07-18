@@ -28,5 +28,50 @@
       "images": [],
       "links": []
     }
+  },
+  {
+    "title": "关于谁是女主角的访谈",
+    "claim": {
+      "note": "该截图广泛流传，并无日文原文、访谈时间等确切信息。若有来源，欢迎补充。",
+      "text": "Q4: 毛利兰是TV里的女主角，灰原哀是主线剧情中的女主角吗？\n——并不是，名侦探柯南的所有女主角都是毛利兰一个人，并未区分主线女主角和剧集女主角，灰原哀不是任何形式的女主角。",
+      "images": ["/data/debunk/figs/quote_female_lead.png"],
+      "links": []
+    },
+    "truth": {
+      "note": "行文不符合日语用语习惯，也不符合青山访谈的回复习惯。大概率为编造产物。",
+      "text": "",
+      "images": [],
+      "links": []
+    }
+  },
+  {
+    "title": "名柯结局要刀一个重要角色",
+    "claim": {
+      "note": "该传言广泛流传，已证实为编造产物。",
+      "text": "……只是想不到，灰原竟然会在未来的几话中身亡，各位哀迷必然惋惜了……",
+      "images": ["/data/debunk/figs/quote_haibara_death.png"],
+      "links": []
+    },
+    "truth": {
+      "note": "银色子弹的详细辟谣文章：https://www.sbsub.com/posts/ending_rumours/",
+      "text": "",
+      "images": [],
+      "links": []
+    }
+  },
+  {
+    "title": "名柯结局要牺牲一对青梅竹马",
+    "claim": {
+      "note": "该传言广泛流传，已证实为编造产物。",
+      "text": "再就是……关于柯南里面的几对青梅竹马。其实在最开始画“柯南”的时候，原本是打算让他们全部都能终成眷属——可能是因为当时大家的思想都还比较保守吧。不过后来觉得，如果真的每一对都能终成眷属那就太没悬念了，所以最终他们的结局是各不相同的——至少牺牲掉的那一个，他们那对是不可能的。",
+      "images": ["/data/debunk/figs/quote_breakout.png"],
+      "links": []
+    },
+    "truth": {
+      "note": "银色子弹的详细辟谣文章：https://www.sbsub.com/posts/ending_rumours/",
+      "text": "目前最接近的原始信息来自2014年4月18日发售的官方书《名侦探柯南SDB50+》:\nQ104 登场了这么多情侣，最后（这些情侣）会是happy end吗？\n青山刚昌:“会的哦。基本上（笑）”\nQ104 カップルが多く出来てきていますが最後、ハッピーエンドになりますか？\n青山刚昌:なりますよ。ほぼ（笑）",
+      "images": ["/data/debunk/figs/breakout_related.png"],
+      "links": []
+    }
   }
 ]
