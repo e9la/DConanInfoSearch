@@ -9,30 +9,47 @@ interview_text_cache = {}
 def init_manga_cache():
     if not ENABLE_CACHE or manga_text_cache:
         return
-    _init_cache_from_directory(manga_text_cache, MANGA_TEXT_DIR)
+    _init_cache_from_directory(manga_text_cache, MANGA_TEXT_DIR, use_walk=True)
+
+# def init_interview_cache():
+#     if not ENABLE_CACHE or interview_text_cache:
+#         return
+    
+#     # Old logic for clustered interviews
+#     # json_path = os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json")
+#     # if not os.path.exists(json_path):
+#     #     print(f"⚠️ 找不到 {json_path}，请先运行 merge_and_dedup.py 生成该文件")
+#     #     return
+
+#     # try:
+#     #     with open(json_path, "r", encoding="utf-8") as f:
+#     #         merged = json.load(f)
+#     #     for interview in merged:
+#     #         interview_text_cache[interview["id"]] = interview["content"]
+#     # except Exception as e:
+#     #     print(f"❌ 加载 merged_interviews.json 失败: {e}")
+    
+#     # use mannually checked interview data from Pingzheshenhei's repo directly
+#     # note: video-type data are not included
+#     # should be carefully when adding new data
+#     _init_cache_from_directory(interview_text_cache, MANUALLY_CHECKED_INTERVIEW_DIR)
 
 def init_interview_cache():
     if not ENABLE_CACHE or interview_text_cache:
         return
     
-    # Old logic for clustered interviews
-    # json_path = os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json")
-    # if not os.path.exists(json_path):
-    #     print(f"⚠️ 找不到 {json_path}，请先运行 merge_and_dedup.py 生成该文件")
-    #     return
+    print("🔧 init_interview_cache 开始运行")
 
-    # try:
-    #     with open(json_path, "r", encoding="utf-8") as f:
-    #         merged = json.load(f)
-    #     for interview in merged:
-    #         interview_text_cache[interview["id"]] = interview["content"]
-    # except Exception as e:
-    #     print(f"❌ 加载 merged_interviews.json 失败: {e}")
-    
-    # use mannually checked interview data from Pingzheshenhei's repo directly
-    # note: video-type data are not included
-    # should be carefully when adding new data
-    _init_cache_from_directory(interview_text_cache, MANUALLY_CHECKED_INTERVIEW_DIR)
+    # 你应该已经写了这句：
+    _init_cache_from_directory(interview_text_cache, MANUALLY_CHECKED_INTERVIEW_DIR, use_walk=True)
+
+    print(f"✅ 加载 interview cache 成功，共 {len(interview_text_cache)} 条")
+
+    for i, path in enumerate(interview_text_cache.keys()):
+        print(f"样例 {i+1}: {path}")
+        if i >= 2:
+            break
+
     
 
 def _init_cache_from_directory(cache_dict, base_dir, use_walk=False):

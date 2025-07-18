@@ -14,6 +14,7 @@ from utils.cache_utils import init_interview_cache, manga_text_cache, interview_
 from utils.search_utils import count_word_in_documents, word_expand
 from utils.quiz_utils import load_quiz_bank
 from utils.interview_helpers import extract_time, extract_participants, extract_theme, extract_contexts
+from urllib.parse import unquote
 
 # Flask init
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -151,12 +152,16 @@ def interview_search():
 # =============================
 # 访谈详情页接口
 # =============================
-@app.route("/interview_detail/<interview_id>")
+@app.route("/interview_detail/<path:interview_id>")
 def interview_detail(interview_id):
+    interview_id = unquote(interview_id)
+    # 查找缓存
     text = interview_text_cache.get(interview_id)
     if not text:
+        print(f"❌ 找不到访谈缓存: {interview_id}")
         return "该访谈不存在", 404
 
+    # 提取元数据
     title = os.path.basename(interview_id).replace(".txt", "")
     meta = get_interview_metadata(interview_id)
 
@@ -166,12 +171,13 @@ def interview_detail(interview_id):
         "theme": extract_theme(title, text),
     }
 
+    # 获取关键词
     search_word = request.args.get("kw", "").strip()
     match_contexts = extract_contexts(text, search_word)
 
     source_links = [{
         "title": title,
-        "source": meta["source"],
+        "source": meta.get("source", "未知来源"),
         "url": meta["urls"][0] if meta.get("urls") else None
     }]
 
@@ -183,7 +189,6 @@ def interview_detail(interview_id):
         match_contexts=match_contexts,
         source_links=source_links
     )
-
 
 @app.route("/debunk")
 def debunk():
