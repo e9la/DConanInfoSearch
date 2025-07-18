@@ -284,3 +284,38 @@ footer a:hover {
     width: 100%;
   }
 }
+
+
+/* ✅ 真伪考据标题蓝底样式 */
+.debunk-card h3 {
+  background-color: #0078D7;
+  color: white;
+  padding: 0.8em 1em;
+  margin: -1em -1em 1em -1em;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-size: 1.1em;
+}
+
+/* ✅ 蓝边展开栏（整条可点击） */
+.debunk-toggle-bar {
+  border: 1px solid #0078D7;
+  border-radius: 6px;
+  padding: 0.6em 1em;
+  margin-top: 0.8em;
+  color: #0078D7;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  font-weight: bold;
+  font-size: 0.95em;
+  transition: background-color 0.2s ease;
+}
+
+.debunk-toggle-bar:hover {
+  background-color: #eaf4ff;
+}
+
+.debunk-card.expanded .debunk-toggle-bar {
+  color: #005fa3;
+}

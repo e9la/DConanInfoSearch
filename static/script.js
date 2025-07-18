@@ -43,14 +43,14 @@ function switchMode(mode) {
   document.getElementById("tab-" + mode).classList.add("active");
   resultList.innerHTML = "";
 
-  // ✅ 控制搜索表单样式（访谈/考据用紧凑样式）
+  // ✅ 控制表单布局样式
   if (mode === "japanese") {
     searchForm.classList.remove("compact-layout");
   } else {
     searchForm.classList.add("compact-layout");
   }
 
-  // ✅ 卷号输入框只在漫画模式插入
+  // ✅ 卷号输入框仅漫画模式插入
   volumeFilterContainer.innerHTML = "";
   if (mode === "japanese") {
     const input = document.createElement("input");
@@ -86,6 +86,7 @@ function renderDebunkResults(data, word) {
     const card = document.createElement("div");
     card.className = "debunk-card";
 
+    // ✅ 标题蓝底白字
     const titleEl = document.createElement("h3");
     titleEl.textContent = title;
     card.appendChild(titleEl);
@@ -163,21 +164,17 @@ function renderDebunkResults(data, word) {
     scrollable.appendChild(inner);
     card.appendChild(scrollable);
 
-    const overlay = document.createElement("div");
-    overlay.className = "debunk-overlay";
+    // ✅ 添加统一风格的蓝框展开条
+    const toggleBar = document.createElement("div");
+    toggleBar.className = "debunk-toggle-bar";
+    toggleBar.textContent = "展开";
 
-    const toggleBtn = document.createElement("button");
-    toggleBtn.textContent = "展开";
-    toggleBtn.className = "debunk-toggle";
-
-    toggleBtn.addEventListener("click", () => {
+    toggleBar.addEventListener("click", () => {
       card.classList.toggle("expanded");
-      toggleBtn.textContent = card.classList.contains("expanded") ? "收起" : "展开";
+      toggleBar.textContent = card.classList.contains("expanded") ? "收起" : "展开";
     });
 
-    overlay.appendChild(toggleBtn);
-    card.appendChild(overlay);
-
+    card.appendChild(toggleBar);
     resultList.appendChild(card);
   });
 }
