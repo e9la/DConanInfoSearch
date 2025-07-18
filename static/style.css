@@ -54,6 +54,7 @@ body {
   align-items: center;
   gap: 1em;
   margin-top: 1em;
+  margin-bottom: 2em;  /* ✅ 搜索区域与结果卡片之间加大距离 */
 }
 
 #search-form input,
@@ -89,6 +90,45 @@ body {
 #search-form button:hover {
   background-color: #005fa3;
 }
+
+/* ✅ 访谈 / 真伪 模式：搜索框 + 按钮同一行，宽度 3:1 */
+form.compact-layout {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+  flex-wrap: wrap;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form.compact-layout input[name="word"] {
+  flex: 3;
+  min-width: 180px;
+  padding: 0.6em;
+  font-size: 1em;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+form.compact-layout button[type="submit"] {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  background-color: #0078D7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form.compact-layout button[type="submit"]:hover {
+  background-color: #005fa3;
+}
+
 
 /* ====== 模式描述区域 ====== */
 .mode-description {
@@ -172,7 +212,6 @@ footer a:hover {
   color: #222;
 }
 
-/* 内容布局：默认横向展示 */
 .debunk-inner {
   display: block;
   margin-top: 1em;
@@ -222,7 +261,6 @@ footer a:hover {
   font-size: 0.9em;
 }
 
-
 .no-result {
   font-style: italic;
   color: #888;
@@ -245,114 +283,4 @@ footer a:hover {
   .debunk-truth {
     width: 100%;
   }
-}
-
-function renderDebunkResults(data, word) {
-  resultList.innerHTML = "";
-
-  if (!Array.isArray(data) || data.length === 0) {
-    resultList.innerHTML = `<div class='no-result'>未找到包含「${word}」的结果。</div>`;
-    return;
-  }
-
-  data.forEach(({ title, claim, truth }) => {
-    const card = document.createElement("div");
-    card.className = "debunk-card";
-
-    const titleEl = document.createElement("h3");
-    titleEl.textContent = title;
-    card.appendChild(titleEl);
-
-    const inner = document.createElement("div");
-    inner.className = "debunk-inner";
-
-    // 创建可滚动的内容容器
-    const scrollable = document.createElement("div");
-    scrollable.className = "debunk-scrollable";
-
-    const claimDiv = document.createElement("div");
-    claimDiv.className = "debunk-claim";
-    const claimHeader = document.createElement("h4");
-    claimHeader.textContent = "📌 流传说法";
-    claimDiv.appendChild(claimHeader);
-    if (claim.note) {
-      const note = document.createElement("p");
-      note.innerHTML = `<em>${claim.note}</em>`;
-      claimDiv.appendChild(note);
-    }
-    claim.text.split("\n").forEach(line => {
-      const p = document.createElement("p");
-      p.textContent = line;
-      claimDiv.appendChild(p);
-    });
-    (claim.images || []).forEach(img => {
-      const i = document.createElement("img");
-      i.src = img;
-      i.className = "debunk-image";
-      claimDiv.appendChild(i);
-    });
-    (claim.links || []).forEach(link => {
-      if (link) {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
-        const ul = claimDiv.querySelector("ul") || document.createElement("ul");
-        ul.appendChild(li);
-        claimDiv.appendChild(ul);
-      }
-    });
-
-    const truthDiv = document.createElement("div");
-    truthDiv.className = "debunk-truth";
-    const truthHeader = document.createElement("h4");
-    truthHeader.textContent = "✅ 考据结论";
-    truthDiv.appendChild(truthHeader);
-    if (truth.note) {
-      const note = document.createElement("p");
-      note.innerHTML = `<em>${truth.note}</em>`;
-      truthDiv.appendChild(note);
-    }
-    truth.text.split("\n").forEach(line => {
-      const p = document.createElement("p");
-      p.textContent = line;
-      truthDiv.appendChild(p);
-    });
-    (truth.images || []).forEach(img => {
-      const i = document.createElement("img");
-      i.src = img;
-      i.className = "debunk-image";
-      truthDiv.appendChild(i);
-    });
-    (truth.links || []).forEach(link => {
-      if (link) {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
-        const ul = truthDiv.querySelector("ul") || document.createElement("ul");
-        ul.appendChild(li);
-        truthDiv.appendChild(ul);
-      }
-    });
-
-    inner.appendChild(claimDiv);
-    inner.appendChild(truthDiv);
-    scrollable.appendChild(inner);
-    card.appendChild(scrollable);
-
-    // 添加遮罩和“展开”按钮
-    const overlay = document.createElement("div");
-    overlay.className = "debunk-overlay";
-
-    const toggleBtn = document.createElement("button");
-    toggleBtn.textContent = "展开";
-    toggleBtn.className = "debunk-toggle";
-
-    toggleBtn.addEventListener("click", () => {
-      card.classList.toggle("expanded");
-      toggleBtn.textContent = card.classList.contains("expanded") ? "收起" : "展开";
-    });
-
-    overlay.appendChild(toggleBtn);
-    card.appendChild(overlay);
-
-    resultList.appendChild(card);
-  });
 }

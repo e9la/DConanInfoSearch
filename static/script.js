@@ -4,6 +4,7 @@ const resultList = document.getElementById("results");
 const descriptionBox = document.getElementById("mode-description");
 const volumeFilterContainer = document.getElementById("volume-filter-container");
 const sourceFilter = document.getElementById("source-filter");
+const searchForm = document.getElementById("search-form");
 
 const modeDescriptions = {
   japanese: `📘 当前模式：<strong>漫画文本检索</strong><br>・仅搜索漫画原文（持续更新中）<br>・仅支持日文全词匹配（不支持模糊搜索）<br>・可填写卷号进行过滤`,
@@ -42,7 +43,14 @@ function switchMode(mode) {
   document.getElementById("tab-" + mode).classList.add("active");
   resultList.innerHTML = "";
 
-  // ✅ 动态添加 / 移除卷号输入框
+  // ✅ 控制搜索表单样式（访谈/考据用紧凑样式）
+  if (mode === "japanese") {
+    searchForm.classList.remove("compact-layout");
+  } else {
+    searchForm.classList.add("compact-layout");
+  }
+
+  // ✅ 卷号输入框只在漫画模式插入
   volumeFilterContainer.innerHTML = "";
   if (mode === "japanese") {
     const input = document.createElement("input");
@@ -228,8 +236,8 @@ document.getElementById("search-form").addEventListener("submit", async function
       div.style.marginBottom = "1em";
       resultList.appendChild(div);
     });
-  } else if (currentMode == "interview") {
-    // 略
+  } else if (currentMode === "interview") {
+    // TODO: interview 渲染函数
   } else if (currentMode === "debunk") {
     renderDebunkResults(data, word);
   }
