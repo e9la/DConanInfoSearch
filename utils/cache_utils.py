@@ -1,7 +1,7 @@
 import os
 import zipfile
 import json
-from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, PROCESSED_DATA_DIR, ENABLE_CACHE
+from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, PROCESSED_DATA_DIR, ENABLE_CACHE, MANUALLY_CHECKED_INTERVIEW_DIR
 
 manga_text_cache = {}
 interview_text_cache = {}
@@ -14,19 +14,26 @@ def init_manga_cache():
 def init_interview_cache():
     if not ENABLE_CACHE or interview_text_cache:
         return
+    
+    # Old logic for clustered interviews
+    # json_path = os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json")
+    # if not os.path.exists(json_path):
+    #     print(f"⚠️ 找不到 {json_path}，请先运行 merge_and_dedup.py 生成该文件")
+    #     return
 
-    json_path = os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json")
-    if not os.path.exists(json_path):
-        print(f"⚠️ 找不到 {json_path}，请先运行 merge_and_dedup.py 生成该文件")
-        return
-
-    try:
-        with open(json_path, "r", encoding="utf-8") as f:
-            merged = json.load(f)
-        for interview in merged:
-            interview_text_cache[interview["id"]] = interview["content"]
-    except Exception as e:
-        print(f"❌ 加载 merged_interviews.json 失败: {e}")
+    # try:
+    #     with open(json_path, "r", encoding="utf-8") as f:
+    #         merged = json.load(f)
+    #     for interview in merged:
+    #         interview_text_cache[interview["id"]] = interview["content"]
+    # except Exception as e:
+    #     print(f"❌ 加载 merged_interviews.json 失败: {e}")
+    
+    # use mannually checked interview data from Pingzheshenhei's repo directly
+    # note: video-type data are not included
+    # should be carefully when adding new data
+    _init_cache_from_directory(interview_text_cache, MANUALLY_CHECKED_INTERVIEW_DIR)
+    
 
 def _init_cache_from_directory(cache_dict, base_dir, use_walk=False):
     if not os.path.exists(base_dir):

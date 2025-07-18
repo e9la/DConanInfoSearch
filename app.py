@@ -26,8 +26,10 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["60 per minute"])
 # Quiz bank init
 quiz_bank = load_quiz_bank()
 
-with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
-    INTERVIEWS = json.load(f)
+# used for clustered interviews
+# with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
+#     INTERVIEWS = json.load(f)
+
 with open("data/debunk/debunk_data.json", encoding="utf-8") as f:
     debunk_data = json.load(f)
 
