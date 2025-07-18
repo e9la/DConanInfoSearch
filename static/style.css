@@ -1,43 +1,27 @@
+/* ====== 全局布局 ====== */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: "微软雅黑", sans-serif;
+  font-family: "微软雅黑", "Helvetica Neue", sans-serif;
   background-color: #f5f7fa;
   margin: 0;
   padding: 2em;
   padding-bottom: 6em;
-}
-
-.container {
-  max-width: 900px;
-  margin: 2em auto;
-  padding: 1.5em;
-  background-color: #fdfdfd;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  font-family: "Helvetica Neue", sans-serif;
   color: #333;
 }
 
-.interview-meta p {
-  margin: 0.3em 0;
+.section {
+  background-color: #fff;
+  padding: 2em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin: 2em auto;
+  max-width: 720px;
 }
 
-.interview-content {
-  margin: 1.5em 0;
-  background: #f4f4f4;
-  padding: 1em;
-  border-left: 4px solid #bbb;
-  border-radius: 4px;
-  font-size: 1em;
-}
-
-.interview-sources ul {
-  padding-left: 1.2em;
-}
-
-.interview-sources li {
-  margin-bottom: 0.4em;
-}
-
+/* ====== 标题与头部 ====== */
 .header-box {
   display: flex;
   align-items: center;
@@ -59,35 +43,11 @@ body {
   align-items: center;
 }
 
-.title-text div {
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-}
-
-.title-text div:nth-child(1) { font-size: 1.9em; }
-.title-text div:nth-child(2) { font-size: 2.4em; }
+.title-text div:nth-child(1) { font-size: 1.9em; font-weight: bold; }
+.title-text div:nth-child(2) { font-size: 2.4em; font-weight: bold; }
 .title-text div:nth-child(3) { font-size: 1.3em; }
 
-.section {
-  background-color: #fff;
-  padding: 2em;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin: 2em auto;
-  max-width: 720px;
-}
-
-.mode-description {
-  background-color: #eaf4ff;
-  border: 1px solid #b3d4fc;
-  padding: 1em;
-  border-radius: 6px;
-  color: #333;
-  font-size: 0.95em;
-  line-height: 1.6;
-}
-
+/* ====== 搜索栏 ====== */
 #search-form {
   display: flex;
   flex-wrap: wrap;
@@ -130,11 +90,17 @@ body {
   background-color: #005fa3;
 }
 
-.no-result {
-  color: #888;
-  margin-top: 1em;
+/* ====== 模式描述区域 ====== */
+.mode-description {
+  background-color: #eaf4ff;
+  border: 1px solid #b3d4fc;
+  padding: 1em;
+  border-radius: 6px;
+  font-size: 0.95em;
+  line-height: 1.6;
 }
 
+/* ====== 页脚样式 ====== */
 footer {
   text-align: left;
   margin-top: 3em;
@@ -158,6 +124,7 @@ footer a:hover {
   text-decoration: underline;
 }
 
+/* ====== Tab 标签 ====== */
 .tab-bar {
   position: fixed;
   bottom: 0;
@@ -188,15 +155,204 @@ footer a:hover {
   font-weight: bold;
 }
 
-.card:hover {
-  background-color: #f0f7ff;
-  box-shadow: 0 0 6px rgba(0, 120, 215, 0.2);
+/* ====== 真伪考据卡片 ====== */
+.debunk-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 2em;
+  padding: 1em;
+  background-color: #fff;
+  overflow: hidden;
+  max-width: 100%;
 }
 
-@media (max-width: 640px) {
+.debunk-card h3 {
+  margin: 0 0 0.8em;
+  font-size: 1.2em;
+  color: #222;
+}
+
+/* 内容布局：默认横向展示 */
+.debunk-inner {
+  display: block;
+  margin-top: 1em;
+  position: relative;
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.debunk-card.expanded .debunk-inner {
+  max-height: none;
+}
+
+.debunk-claim,
+.debunk-truth {
+  margin-bottom: 1em;
+}
+
+.debunk-claim h4,
+.debunk-truth h4 {
+  font-size: 1em;
+  margin-bottom: 0.5em;
+  color: #444;
+}
+
+.debunk-claim p,
+.debunk-truth p {
+  line-height: 1.6;
+  margin-bottom: 0.5em;
+  color: #333;
+}
+
+.debunk-image {
+  max-width: 100%;
+  margin-top: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.toggle-btn {
+  display: block;
+  margin-top: 0.5em;
+  background: none;
+  border: none;
+  color: #0078D7;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+
+.no-result {
+  font-style: italic;
+  color: #888;
+  padding: 1em;
+}
+
+/* ====== 响应式调整（移动设备） ====== */
+@media (max-width: 768px) {
   #search-form input,
   #search-form button,
   #search-form select {
     flex: 100%;
   }
+
+  .debunk-inner {
+    flex-direction: column;
+  }
+
+  .debunk-claim,
+  .debunk-truth {
+    width: 100%;
+  }
+}
+
+function renderDebunkResults(data, word) {
+  resultList.innerHTML = "";
+
+  if (!Array.isArray(data) || data.length === 0) {
+    resultList.innerHTML = `<div class='no-result'>未找到包含「${word}」的结果。</div>`;
+    return;
+  }
+
+  data.forEach(({ title, claim, truth }) => {
+    const card = document.createElement("div");
+    card.className = "debunk-card";
+
+    const titleEl = document.createElement("h3");
+    titleEl.textContent = title;
+    card.appendChild(titleEl);
+
+    const inner = document.createElement("div");
+    inner.className = "debunk-inner";
+
+    // 创建可滚动的内容容器
+    const scrollable = document.createElement("div");
+    scrollable.className = "debunk-scrollable";
+
+    const claimDiv = document.createElement("div");
+    claimDiv.className = "debunk-claim";
+    const claimHeader = document.createElement("h4");
+    claimHeader.textContent = "📌 流传说法";
+    claimDiv.appendChild(claimHeader);
+    if (claim.note) {
+      const note = document.createElement("p");
+      note.innerHTML = `<em>${claim.note}</em>`;
+      claimDiv.appendChild(note);
+    }
+    claim.text.split("\n").forEach(line => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      claimDiv.appendChild(p);
+    });
+    (claim.images || []).forEach(img => {
+      const i = document.createElement("img");
+      i.src = img;
+      i.className = "debunk-image";
+      claimDiv.appendChild(i);
+    });
+    (claim.links || []).forEach(link => {
+      if (link) {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
+        const ul = claimDiv.querySelector("ul") || document.createElement("ul");
+        ul.appendChild(li);
+        claimDiv.appendChild(ul);
+      }
+    });
+
+    const truthDiv = document.createElement("div");
+    truthDiv.className = "debunk-truth";
+    const truthHeader = document.createElement("h4");
+    truthHeader.textContent = "✅ 考据结论";
+    truthDiv.appendChild(truthHeader);
+    if (truth.note) {
+      const note = document.createElement("p");
+      note.innerHTML = `<em>${truth.note}</em>`;
+      truthDiv.appendChild(note);
+    }
+    truth.text.split("\n").forEach(line => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      truthDiv.appendChild(p);
+    });
+    (truth.images || []).forEach(img => {
+      const i = document.createElement("img");
+      i.src = img;
+      i.className = "debunk-image";
+      truthDiv.appendChild(i);
+    });
+    (truth.links || []).forEach(link => {
+      if (link) {
+        const li = document.createElement("li");
+        li.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
+        const ul = truthDiv.querySelector("ul") || document.createElement("ul");
+        ul.appendChild(li);
+        truthDiv.appendChild(ul);
+      }
+    });
+
+    inner.appendChild(claimDiv);
+    inner.appendChild(truthDiv);
+    scrollable.appendChild(inner);
+    card.appendChild(scrollable);
+
+    // 添加遮罩和“展开”按钮
+    const overlay = document.createElement("div");
+    overlay.className = "debunk-overlay";
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.textContent = "展开";
+    toggleBtn.className = "debunk-toggle";
+
+    toggleBtn.addEventListener("click", () => {
+      card.classList.toggle("expanded");
+      toggleBtn.textContent = card.classList.contains("expanded") ? "收起" : "展开";
+    });
+
+    overlay.appendChild(toggleBtn);
+    card.appendChild(overlay);
+
+    resultList.appendChild(card);
+  });
 }

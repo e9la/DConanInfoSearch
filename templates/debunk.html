@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="mode-description" id="mode-description">
+    🔍 当前模式：<strong>真伪考据专区</strong><br>
+    ・收录网络广为传播但出处不明的图文资料<br>
+    ・查证语录、截图、采访是否真实
+  </div>
+
+  <form id="search-form">
+    <input type="hidden" name="mode" id="mode" value="debunk" />
+    <input type="text" name="word" placeholder="🔍 输入关键词查找图文考据..." />
+    <button type="submit">开始搜索</button>
+  </form>
+
+  <div id="results" class="card-container"></div>
+{% endblock %}
