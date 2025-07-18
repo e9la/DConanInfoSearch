@@ -237,12 +237,18 @@ footer a:hover {
   color: #444;
 }
 
-.debunk-claim p,
-.debunk-truth p {
-  line-height: 1.6;
-  margin-bottom: 0.5em;
+.debunk-claim p.note,
+.debunk-truth p.note {
+  font-style: normal;   /* 📌 不斜体 */
   color: #333;
 }
+
+.debunk-claim p.text,
+.debunk-truth p.text {
+  font-style: italic;   /* 📌 斜体 */
+  color: #333;
+}
+
 
 .debunk-image {
   max-width: 100%;

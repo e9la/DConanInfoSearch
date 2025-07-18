@@ -104,11 +104,13 @@ function renderDebunkResults(data, word) {
     claimDiv.appendChild(claimHeader);
     if (claim.note) {
       const note = document.createElement("p");
-      note.innerHTML = `<em>${claim.note}</em>`;
+      note.className = "note";
+      note.textContent = claim.note;
       claimDiv.appendChild(note);
     }
     claim.text.split("\n").forEach(line => {
       const p = document.createElement("p");
+      p.className = "text";
       p.textContent = line;
       claimDiv.appendChild(p);
     });
@@ -135,11 +137,13 @@ function renderDebunkResults(data, word) {
     truthDiv.appendChild(truthHeader);
     if (truth.note) {
       const note = document.createElement("p");
-      note.innerHTML = `<em>${truth.note}</em>`;
+      note.className = "note";
+      note.textContent = truth.note;
       truthDiv.appendChild(note);
     }
     truth.text.split("\n").forEach(line => {
       const p = document.createElement("p");
+      p.className = "text";
       p.textContent = line;
       truthDiv.appendChild(p);
     });
@@ -234,7 +238,48 @@ document.getElementById("search-form").addEventListener("submit", async function
       resultList.appendChild(div);
     });
   } else if (currentMode === "interview") {
-    // TODO: interview 渲染函数
+    data.forEach(({ id, title, count, sources, snippets }) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.border = "1px solid #ccc";
+      card.style.borderRadius = "8px";
+      card.style.marginBottom = "1.5em";
+      card.style.backgroundColor = "#fff";
+      card.style.cursor = "pointer";
+      card.addEventListener("click", () => {
+        const encodedKw = encodeURIComponent(word);
+        window.open(`/interview_detail/${id}?kw=${encodedKw}`, "_blank");
+      });
+
+
+      const header = document.createElement("div");
+      header.textContent = title;
+      header.style.backgroundColor = "#e2ecf8";
+      header.style.padding = "0.8em 1em";
+      header.style.fontWeight = "bold";
+      header.style.fontSize = "1.05em";
+      card.appendChild(header);
+
+      const body = document.createElement("div");
+      body.style.padding = "1em";
+
+      // ✅ 替换为来源信息
+      const metaLine = document.createElement("p");
+      const sourceCount = sources.length;
+      metaLine.innerHTML = `📁 本访谈整理自 <strong>${sourceCount}</strong> 个来源`;
+      metaLine.style.marginBottom = "0.5em";
+      body.appendChild(metaLine);
+
+      snippets.forEach(snippet => {
+        const p = document.createElement("p");
+        p.innerHTML = snippet.replace(new RegExp(word, "g"), `<mark>${word}</mark>`);
+        p.style.lineHeight = "1.6";
+        body.appendChild(p);
+      });
+
+      card.appendChild(body);
+      resultList.appendChild(card);
+    });
   } else if (currentMode === "debunk") {
     renderDebunkResults(data, word);
   }
