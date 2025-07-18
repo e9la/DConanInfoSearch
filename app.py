@@ -4,9 +4,8 @@ import time
 import re
 import random
 import json
-import zipfile
 
-from flask import Flask, request, redirect, render_template, make_response, jsonify, session
+from flask import Flask, request, redirect, render_template, make_response, jsonify, session, send_from_directory
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -29,6 +28,8 @@ quiz_bank = load_quiz_bank()
 
 with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
     INTERVIEWS = json.load(f)
+with open("data/debunk/debunk_data.json", encoding="utf-8") as f:
+    debunk_data = json.load(f)
 
 # =============================
 # 页面入口：答题验证界面
@@ -183,6 +184,52 @@ def interview_detail(interview_id):
         match_contexts=match_contexts,
         source_links=source_links  # ✅ 新增传入
     )
+
+
+@app.route("/debunk")
+def debunk():
+    return render_template("debunk.html")
+
+from flask import send_from_directory
+
+@app.route("/debunk_all", methods=["GET"])
+def debunk_all():
+    return jsonify(debunk_data)
+
+
+@app.route("/data/debunk/figs/<path:filename>")
+def serve_debunk_image(filename):
+    return send_from_directory("data/debunk/figs", filename)
+
+
+@app.route("/debunk_search", methods=["POST"])
+def debunk_search():
+    from flask import request, jsonify
+    import json
+    import os
+
+    word = request.form.get("word", "").strip().lower()
+
+    debunk_path = os.path.join("data", "debunk", "debunk_data.json")
+    with open(debunk_path, "r", encoding="utf-8") as f:
+        entries = json.load(f)
+
+    def match(entry):
+        return (
+            word in entry["title"].lower()
+            or word in entry["claim"]["text"].lower()
+            or word in entry["truth"]["text"].lower()
+        )
+
+    if word:
+        results = [e for e in entries if match(e)]
+    else:
+        results = entries
+
+    return jsonify(results)
+
+
+
 
 
 # =============================

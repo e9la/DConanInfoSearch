@@ -7,7 +7,28 @@
     ・仅支持日文全词匹配（不支持模糊搜索）<br>
   </div>
 
-  {% include "components/search_form.html" %}
+  <form id="search-form">
+    <input type="hidden" name="mode" id="mode" value="japanese" />
 
-  <div id="results"></div>
+    <!-- ✅ 用于动态插入“卷号”输入框 -->
+    <div id="volume-filter-container"></div>
+
+    <input
+      type="text"
+      name="word"
+      placeholder="请输入关键词，例如 猫、萝、声优"
+    />
+
+    <select
+      id="source-filter"
+      name="source_filter"
+      style="display: none;"
+    >
+      <option value="">📂 全部来源</option>
+    </select>
+
+    <button type="submit">开始搜索</button>
+  </form>
+
+  <div id="results" class="card-container"></div>
 {% endblock %}

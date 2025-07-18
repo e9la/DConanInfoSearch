@@ -1,43 +1,27 @@
+/* ====== 全局布局 ====== */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: "微软雅黑", sans-serif;
+  font-family: "微软雅黑", "Helvetica Neue", sans-serif;
   background-color: #f5f7fa;
   margin: 0;
   padding: 2em;
   padding-bottom: 6em;
-}
-
-.container {
-  max-width: 900px;
-  margin: 2em auto;
-  padding: 1.5em;
-  background-color: #fdfdfd;
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  font-family: "Helvetica Neue", sans-serif;
   color: #333;
 }
 
-.interview-meta p {
-  margin: 0.3em 0;
+.section {
+  background-color: #fff;
+  padding: 2em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin: 2em auto;
+  max-width: 720px;
 }
 
-.interview-content {
-  margin: 1.5em 0;
-  background: #f4f4f4;
-  padding: 1em;
-  border-left: 4px solid #bbb;
-  border-radius: 4px;
-  font-size: 1em;
-}
-
-.interview-sources ul {
-  padding-left: 1.2em;
-}
-
-.interview-sources li {
-  margin-bottom: 0.4em;
-}
-
+/* ====== 标题与头部 ====== */
 .header-box {
   display: flex;
   align-items: center;
@@ -59,41 +43,18 @@ body {
   align-items: center;
 }
 
-.title-text div {
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-}
-
-.title-text div:nth-child(1) { font-size: 1.9em; }
-.title-text div:nth-child(2) { font-size: 2.4em; }
+.title-text div:nth-child(1) { font-size: 1.9em; font-weight: bold; }
+.title-text div:nth-child(2) { font-size: 2.4em; font-weight: bold; }
 .title-text div:nth-child(3) { font-size: 1.3em; }
 
-.section {
-  background-color: #fff;
-  padding: 2em;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin: 2em auto;
-  max-width: 720px;
-}
-
-.mode-description {
-  background-color: #eaf4ff;
-  border: 1px solid #b3d4fc;
-  padding: 1em;
-  border-radius: 6px;
-  color: #333;
-  font-size: 0.95em;
-  line-height: 1.6;
-}
-
+/* ====== 搜索栏 ====== */
 #search-form {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1em;
   margin-top: 1em;
+  margin-bottom: 2em;  /* ✅ 搜索区域与结果卡片之间加大距离 */
 }
 
 #search-form input,
@@ -130,11 +91,56 @@ body {
   background-color: #005fa3;
 }
 
-.no-result {
-  color: #888;
+/* ✅ 访谈 / 真伪 模式：搜索框 + 按钮同一行，宽度 3:1 */
+form.compact-layout {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
   margin-top: 1em;
+  margin-bottom: 1.5em;
+  flex-wrap: wrap;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+form.compact-layout input[name="word"] {
+  flex: 3;
+  min-width: 180px;
+  padding: 0.6em;
+  font-size: 1em;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+form.compact-layout button[type="submit"] {
+  flex: 1;
+  min-width: 100px;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  background-color: #0078D7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+form.compact-layout button[type="submit"]:hover {
+  background-color: #005fa3;
+}
+
+
+/* ====== 模式描述区域 ====== */
+.mode-description {
+  background-color: #eaf4ff;
+  border: 1px solid #b3d4fc;
+  padding: 1em;
+  border-radius: 6px;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+/* ====== 页脚样式 ====== */
 footer {
   text-align: left;
   margin-top: 3em;
@@ -158,6 +164,7 @@ footer a:hover {
   text-decoration: underline;
 }
 
+/* ====== Tab 标签 ====== */
 .tab-bar {
   position: fixed;
   bottom: 0;
@@ -188,15 +195,133 @@ footer a:hover {
   font-weight: bold;
 }
 
-.card:hover {
-  background-color: #f0f7ff;
-  box-shadow: 0 0 6px rgba(0, 120, 215, 0.2);
+/* ====== 真伪考据卡片 ====== */
+.debunk-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 2em;
+  padding: 1em;
+  background-color: #fff;
+  overflow: hidden;
+  max-width: 100%;
 }
 
-@media (max-width: 640px) {
+.debunk-card h3 {
+  margin: 0 0 0.8em;
+  font-size: 1.2em;
+  color: #222;
+}
+
+.debunk-inner {
+  display: block;
+  margin-top: 1em;
+  position: relative;
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.debunk-card.expanded .debunk-inner {
+  max-height: none;
+}
+
+.debunk-claim,
+.debunk-truth {
+  margin-bottom: 1em;
+}
+
+.debunk-claim h4,
+.debunk-truth h4 {
+  font-size: 1em;
+  margin-bottom: 0.5em;
+  color: #444;
+}
+
+.debunk-claim p.note,
+.debunk-truth p.note {
+  font-style: normal;   /* 📌 不斜体 */
+  color: #333;
+}
+
+.debunk-claim p.text,
+.debunk-truth p.text {
+  font-style: italic;   /* 📌 斜体 */
+  color: #333;
+}
+
+
+.debunk-image {
+  max-width: 100%;
+  margin-top: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.toggle-btn {
+  display: block;
+  margin-top: 0.5em;
+  background: none;
+  border: none;
+  color: #0078D7;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.no-result {
+  font-style: italic;
+  color: #888;
+  padding: 1em;
+}
+
+/* ====== 响应式调整（移动设备） ====== */
+@media (max-width: 768px) {
   #search-form input,
   #search-form button,
   #search-form select {
     flex: 100%;
   }
+
+  .debunk-inner {
+    flex-direction: column;
+  }
+
+  .debunk-claim,
+  .debunk-truth {
+    width: 100%;
+  }
+}
+
+
+/* ✅ 真伪考据标题蓝底样式 */
+.debunk-card h3 {
+  background-color: #0078D7;
+  color: white;
+  padding: 0.8em 1em;
+  margin: -1em -1em 1em -1em;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-size: 1.1em;
+}
+
+/* ✅ 蓝边展开栏（整条可点击） */
+.debunk-toggle-bar {
+  border: 1px solid #0078D7;
+  border-radius: 6px;
+  padding: 0.6em 1em;
+  margin-top: 0.8em;
+  color: #0078D7;
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  font-weight: bold;
+  font-size: 0.95em;
+  transition: background-color 0.2s ease;
+}
+
+.debunk-toggle-bar:hover {
+  background-color: #eaf4ff;
+}
+
+.debunk-card.expanded .debunk-toggle-bar {
+  color: #005fa3;
 }
