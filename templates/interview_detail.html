@@ -6,7 +6,13 @@
 
     <div class="metadata">
       <p><strong>🕒 时间：</strong>{{ metadata.time }}</p>
-      <p><strong>🎤 参与者：</strong>{{ metadata.participants }}</p>
+      <p><strong>🎤 参与者：</strong>
+        {% if metadata.participants is string %}
+          {{ metadata.participants }}
+        {% else %}
+          {{ metadata.participants | join("、") }}
+        {% endif %}
+      </p>
       <p><strong>📌 主题：</strong>{{ metadata.theme }}</p>
     </div>
 
@@ -25,23 +31,27 @@
 
     <div class="sources">
       <h3>🔗 原始来源</h3>
-      <ul>
-        {% for item in source_links %}
-          {% if item.url %}
-            <li><a href="{{ item.url }}" target="_blank">{{ item.title }}</a>（{{ item.source }}）</li>
-          {% else %}
-            <li>{{ item.title }}（{{ item.source }}，无跳转链接）</li>
-          {% endif %}
-        {% endfor %}
-      </ul>
+      {% if source_links %}
+        <ul>
+          {% for item in source_links %}
+            {% if item.url %}
+              <li>
+                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
+                  {{ item.source }} — {{ item.url }}
+                </a>
+              </li>
+            {% else %}
+              <li>{{ item.source }}（无跳转链接）</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>暂无来源链接。</p>
+      {% endif %}
     </div>
-
-
-
 
     <div style="margin-top: 2em;">
       <a href="/search_page">← 返回搜索页</a>
     </div>
   </div>
 {% endblock %}
-
