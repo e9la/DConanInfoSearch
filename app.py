@@ -10,11 +10,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from utils.interview_sources import get_interview_metadata
-from utils.config import MANGA_TEXT_DIR, INTERVIEW_DATA_DIR, PROCESSED_DATA_DIR
-from utils.cache_utils import init_manga_cache, init_interview_cache, manga_text_cache, interview_text_cache
+from utils.cache_utils import init_interview_cache, manga_text_cache, interview_text_cache
 from utils.search_utils import count_word_in_documents, word_expand
 from utils.quiz_utils import load_quiz_bank
 from utils.interview_helpers import extract_time, extract_participants, extract_theme, extract_contexts
+from urllib.parse import unquote
 
 # Flask init
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -26,8 +26,10 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["60 per minute"])
 # Quiz bank init
 quiz_bank = load_quiz_bank()
 
-with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
-    INTERVIEWS = json.load(f)
+# used for clustered interviews
+# with open(os.path.join(PROCESSED_DATA_DIR, "merged_interviews.json"), "r", encoding="utf-8") as f:
+#     INTERVIEWS = json.load(f)
+
 with open("data/debunk/debunk_data.json", encoding="utf-8") as f:
     debunk_data = json.load(f)
 
@@ -112,8 +114,13 @@ def interview_search():
 
     words = word_expand(word)  # 支持日文变形展开，如ひらがな/漢字等
 
-    for interview in INTERVIEWS:
-        text = interview["content"]
+    for rel_path, text in interview_text_cache.items():
+        meta = get_interview_metadata(rel_path)
+
+        # 来源筛选（可选）
+        if source_filter and meta["source"] != source_filter:
+            continue
+
         matched = False
         total_count = 0
         all_snippets = []
@@ -129,10 +136,10 @@ def interview_search():
 
         if matched:
             results.append({
-                "id": interview["id"],
-                "title": interview["title"],
+                "id": rel_path,  # rel_path 作为唯一标识符
+                "title": os.path.basename(rel_path).replace(".txt", ""),
                 "count": total_count,
-                "sources": interview["sources"],
+                "sources": [rel_path],
                 "snippets": all_snippets[:3],
             })
 
@@ -145,46 +152,43 @@ def interview_search():
 # =============================
 # 访谈详情页接口
 # =============================
-@app.route("/interview_detail/<interview_id>")
+@app.route("/interview_detail/<path:interview_id>")
 def interview_detail(interview_id):
-    # 查找访谈条目
-    interview = next((i for i in INTERVIEWS if i["id"] == interview_id), None)
-    if not interview:
+    interview_id = unquote(interview_id)
+    # 查找缓存
+    text = interview_text_cache.get(interview_id)
+    if not text:
+        print(f"❌ 找不到访谈缓存: {interview_id}")
         return "该访谈不存在", 404
 
-    # 提取元数据信息
+    # 提取元数据
+    title = os.path.basename(interview_id).replace(".txt", "")
+    meta = get_interview_metadata(interview_id)
+
     metadata = {
-        "time": extract_time(interview["title"]),
-        "participants": extract_participants(interview["content"]),
-        "theme": extract_theme(interview["title"], interview["content"]),
+        "time": extract_time(title),
+        "participants": extract_participants(text),
+        "theme": extract_theme(title, text),
     }
 
-    # 获取关键词（来自 URL 参数）
+    # 获取关键词
     search_word = request.args.get("kw", "").strip()
+    match_contexts = extract_contexts(text, search_word)
 
-    match_contexts = extract_contexts(interview["content"], search_word)
+    source_links = [{
+        "title": title,
+        "source": meta.get("source", "未知来源"),
+        "url": meta["urls"][0] if meta.get("urls") else None
+    }]
 
-    # 获取来源链接信息
-    source_links = []
-    for src in interview["sources"]:
-        meta = get_interview_metadata(src)  # 你提供的函数
-        title = os.path.basename(src).replace(".txt", "")
-        source_links.append({
-            "title": title,
-            "source": meta["source"],
-            "url": meta["url"]
-        })
-
-    # 渲染页面
     return render_template(
         "interview_detail.html",
-        interview=interview,
+        interview={"id": interview_id, "title": title, "content": text},
         metadata=metadata,
         keyword=search_word,
         match_contexts=match_contexts,
-        source_links=source_links  # ✅ 新增传入
+        source_links=source_links
     )
-
 
 @app.route("/debunk")
 def debunk():

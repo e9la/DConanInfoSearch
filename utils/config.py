@@ -3,6 +3,7 @@ import os
 
 MANGA_TEXT_DIR = "data/submodule_data/纯文本/日文"
 INTERVIEW_DATA_DIR = "data/interviews/raw"
+MANUALLY_CHECKED_INTERVIEW_DIR = "data/submodule_data/名柯访谈手工整理"
 PROCESSED_DATA_DIR = "data/interviews/processed"
 LOG_DIR = "./logs"
 
